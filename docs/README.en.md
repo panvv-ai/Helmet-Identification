@@ -2,7 +2,18 @@
 
 **A local safety-helmet monitoring and employee recognition workbench**
 
-[中文](../README.md) · [Architecture](architecture.md) · [Privacy](privacy.md) · [Model Card](model-card.md) · [MIT License](../LICENSE)
+<p align="center">
+  <a href="https://github.com/panvv-ai/Helmet-Identification/actions/workflows/ci.yml">
+    <img alt="CI" src="https://github.com/panvv-ai/Helmet-Identification/actions/workflows/ci.yml/badge.svg">
+  </a>
+  <img alt="Python 3.11" src="https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white">
+  <img alt="Node.js 22+" src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white">
+  <img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+</p>
+
+<p align="center">
+  <a href="../README.md">中文</a> | <a href="README.en.md">English</a>
+</p>
 
 Helmet Workbench turns a collection of legacy YOLO detection, face classification, PyQt screens, SQLite queries and video-player scripts into one local-first web product. It provides employee enrollment, face sample collection and training, helmet detection, attendance, violation records and daily reporting in one workspace.
 
@@ -24,7 +35,7 @@ Helmet Workbench turns a collection of legacy YOLO detection, face classificatio
 
 ## Quick Start
 
-Requirements: Python 3.11–3.12, Node.js 20+, pnpm 10+ and a modern browser.
+Requirements: Python 3.11–3.12, Node.js 22+, pnpm 10+ and a modern browser.
 
 ```bash
 git clone https://github.com/panvv-ai/Helmet-Identification.git

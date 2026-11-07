@@ -2,7 +2,18 @@
 
 **安全帽智能识别与员工身份工作台**
 
-[English](docs/README.en.md) · [产品架构](docs/architecture.md) · [隐私说明](docs/privacy.md) · [模型卡](docs/model-card.md) · [MIT License](LICENSE)
+<p align="center">
+  <a href="https://github.com/panvv-ai/Helmet-Identification/actions/workflows/ci.yml">
+    <img alt="CI" src="https://github.com/panvv-ai/Helmet-Identification/actions/workflows/ci.yml/badge.svg">
+  </a>
+  <img alt="Python 3.11" src="https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white">
+  <img alt="Node.js 22+" src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white">
+  <img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+</p>
+
+<p align="center">
+  <a href="README.md">简体中文</a> | <a href="docs/README.en.md">English</a>
+</p>
 
 Helmet Workbench 将原先分散的 YOLO 检测、人脸分类、PyQt 页面、SQLite 查询和视频播放整合为一个本地优先的 Web 产品。用户可以在同一张工作台完成员工建档、人脸样本采集与训练、安全帽检测、摄像头签到、违规记录和每日统计。
 
@@ -46,7 +57,7 @@ Helmet Workbench 将原先分散的 YOLO 检测、人脸分类、PyQt 页面、S
 ### 环境要求
 
 - Python 3.11 或 3.12
-- Node.js 20+
+- Node.js 22+
 - pnpm 10+
 - 现代浏览器，摄像头功能需要用户授权
 
