@@ -1,0 +1,28 @@
+:root {
+  color-scheme: dark;
+  --bg: #060c14;
+  --bg-deep: #03070c;
+  --surface: rgba(11, 23, 34, 0.88);
+  --surface-strong: #0e1d29;
+  --surface-soft: rgba(18, 35, 48, 0.7);
+  --line: rgba(150, 202, 224, 0.16);
+  --line-strong: rgba(115, 214, 246, 0.32);
+  --text: #f4f8fa;
+  --text-soft: #c2d0d8;
+  --muted: #7f96a5;
+  --cyan: #6ee1ff;
+  --cyan-strong: #22bdec;
+  --cyan-glow: rgba(86, 214, 255, 0.2);
+  --amber: #ffb33e;
+  --amber-soft: rgba(255, 179, 62, 0.16);
+  --green: #69e2a9;
+  --green-soft: rgba(105, 226, 169, 0.14);
+  --danger: #ff865f;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  --font-display: "Avenir Next", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --font-body: "Avenir Next", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", "Cascadia Code", monospace;
+}
