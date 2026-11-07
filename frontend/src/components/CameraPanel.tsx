@@ -8,9 +8,14 @@ interface CameraPanelProps {
   disabled: boolean;
   onMessage: (message: CameraMessage) => void;
   onStopped: (saved: number) => Promise<void>;
-  videoRef: React.RefObject<HTMLVideoElement | null>;
   onActiveChange: (active: boolean) => void;
 }
+
+const modeLabels = {
+  collect: "人脸样本采集",
+  analysis: "实时画面检测",
+  business: "签到与违规记录",
+};
 
 export function CameraPanel({
   mode,
@@ -18,11 +23,12 @@ export function CameraPanel({
   disabled,
   onMessage,
   onStopped,
-  videoRef,
   onActiveChange,
 }: CameraPanelProps) {
   const [active, setActive] = useState(false);
   const [saved, setSaved] = useState(0);
+  const [frameCount, setFrameCount] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -47,7 +53,11 @@ export function CameraPanel({
       });
       streamRef.current = stream;
       const video = videoRef.current;
-      if (!video) return;
+      if (!video) {
+        stream.getTracks().forEach((track) => track.stop());
+        onMessage({ type: "error", message: "摄像头画面尚未准备好" });
+        return;
+      }
       video.srcObject = stream;
       await video.play();
       const protocol = window.location.protocol === "https:" ? "wss" : "ws";
@@ -62,6 +72,9 @@ export function CameraPanel({
         if (message.type === "collection" && message.saved) {
           setSaved((current) => current + (message.saved ?? 0));
         }
+        if (message.type === "detection") {
+          setFrameCount((current) => current + 1);
+        }
         onMessage(message);
       };
       socket.onerror = () => onMessage({ type: "error", message: "摄像头连接已中断" });
@@ -70,6 +83,7 @@ export function CameraPanel({
         socket.addEventListener("open", () => resolve(), { once: true });
       });
       setSaved(0);
+      setFrameCount(0);
       setActive(true);
       onActiveChange(true);
       const canvas = document.createElement("canvas");
@@ -118,14 +132,52 @@ export function CameraPanel({
   }
 
   return (
-    <button
-      type="button"
-      className={active ? "primary-action is-stop" : "primary-action"}
-      disabled={disabled}
-      onClick={active ? stop : start}
-    >
-      <span aria-hidden="true">{active ? "■" : "◉"}</span>
-      {active ? "停止并保存结果" : "开启摄像头"}
-    </button>
+    <div className={`camera-unit ${active ? "is-active" : ""}`}>
+      <video
+        ref={videoRef}
+        className="camera-unit__video"
+        aria-label="摄像头实时画面"
+        muted
+        playsInline
+      />
+      {!active && (
+        <div className="camera-unit__empty" aria-live="polite">
+          <div className="scan-radar" aria-hidden="true">
+            <span className="scan-radar__ring scan-radar__ring--one" />
+            <span className="scan-radar__ring scan-radar__ring--two" />
+            <span className="scan-radar__sweep" />
+            <span className="scan-radar__helmet">◠</span>
+          </div>
+          <strong>
+            {mode === "collect" ? "对准员工，开始采集人脸" : "开启摄像头，开始现场检测"}
+          </strong>
+          <p>{modeLabels[mode]} · 画面只在本机处理</p>
+        </div>
+      )}
+      <div className="camera-unit__control">
+        <div className="camera-unit__meta">
+          <span className={active ? "pulse-dot is-live" : "pulse-dot"} />
+          <span>
+            <strong>{active ? modeLabels[mode] : "摄像头待机"}</strong>
+            <small>
+              {active
+                ? mode === "collect"
+                  ? `已保存 ${saved} 张 · 持续采集`
+                  : `已处理 ${frameCount} 帧 · 实时分析`
+                : "启动后可在同一画面停止并保存"}
+            </small>
+          </span>
+        </div>
+        <button
+          type="button"
+          className={active ? "camera-action is-stop" : "camera-action"}
+          disabled={disabled}
+          onClick={active ? stop : start}
+        >
+          <span aria-hidden="true">{active ? "■" : "◉"}</span>
+          {active ? "停止并保存结果" : "开启摄像头"}
+        </button>
+      </div>
+    </div>
   );
 }

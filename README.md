@@ -50,13 +50,12 @@ uv sync --extra dev
 pnpm --dir frontend install
 pnpm --dir frontend build
 
-uv run python main.py init
 uv run python main.py
 ```
 
 打开 <http://127.0.0.1:8000>。
 
-`main.py init` 会创建运行目录、数据库并下载经过 SHA-256 校验的安全帽模型。模型通过 GitHub Release 分发，不进入源码仓库。
+默认启动命令会自动完成运行目录、数据库和模型准备，然后启动工作台。安全帽模型通过 GitHub Release 分发并经过 SHA-256 校验，不进入源码仓库。
 
 ### 前端开发模式
 
@@ -78,8 +77,8 @@ pnpm --dir frontend dev
 
 | 命令 | 用途 |
 | --- | --- |
-| `uv run python main.py` | 启动本地 Web 工作台 |
-| `uv run python main.py init` | 初始化目录、数据库和模型 |
+| `uv run python main.py` | 自动初始化并启动本地 Web 工作台 |
+| `uv run python main.py init` | 仅执行初始化，用于排查启动问题 |
 | `uv run python main.py download-models` | 下载或校验安全帽模型 |
 | `uv run python main.py train --epochs 8` | 从当前员工样本训练身份模型 |
 | `uv run python main.py detect path/to/photo.jpg` | 命令行分析单张照片 |

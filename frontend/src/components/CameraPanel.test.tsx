@@ -1,4 +1,3 @@
-import { createRef } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -47,20 +46,15 @@ describe("CameraPanel", () => {
     });
     const onStopped = vi.fn().mockResolvedValue(undefined);
     const user = userEvent.setup();
-    const videoRef = createRef<HTMLVideoElement>();
     render(
-      <>
-        <video ref={videoRef} />
-        <CameraPanel
-          mode="collect"
-          employeeId="employee-1"
-          disabled={false}
-          onMessage={() => undefined}
-          onStopped={onStopped}
-          videoRef={videoRef}
-          onActiveChange={() => undefined}
-        />
-      </>,
+      <CameraPanel
+        mode="collect"
+        employeeId="employee-1"
+        disabled={false}
+        onMessage={() => undefined}
+        onStopped={onStopped}
+        onActiveChange={() => undefined}
+      />,
     );
 
     await user.click(screen.getByRole("button", { name: /开启摄像头/ }));

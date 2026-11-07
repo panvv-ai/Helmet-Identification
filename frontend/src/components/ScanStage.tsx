@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { CameraMessage, Detection, Source } from "../api/types";
 
 interface ScanStageProps {
@@ -6,8 +8,8 @@ interface ScanStageProps {
   busy: boolean;
   cameraActive: boolean;
   latestMessage: CameraMessage | null;
-  videoRef: React.RefObject<HTMLVideoElement | null>;
   resultUrl: string | null;
+  cameraPanel?: ReactNode;
 }
 
 function DetectionChip({ detection }: { detection: Detection }) {
@@ -26,8 +28,8 @@ export function ScanStage({
   busy,
   cameraActive,
   latestMessage,
-  videoRef,
   resultUrl,
+  cameraPanel,
 }: ScanStageProps) {
   const detections = latestMessage?.detections ?? [];
   return (
@@ -35,7 +37,8 @@ export function ScanStage({
       <div className="panel__head">
         <div>
           <span className="eyebrow">LIVE FIELD</span>
-          <h2>现场扫描舞台</h2>
+          <h2>现场画面</h2>
+          <p className="stage-description">摄像头实时采集，或查看照片与视频分析结果</p>
         </div>
         <div className="stage-status">
           <span className={busy || cameraActive ? "pulse-dot is-live" : "pulse-dot"} />
@@ -43,7 +46,9 @@ export function ScanStage({
         </div>
       </div>
       <div className={`scan-canvas scan-canvas--${source}`}>
-        {resultUrl ? (
+        {cameraPanel ? (
+          cameraPanel
+        ) : resultUrl ? (
           <img className="stage-media" src={resultUrl} alt="分析后的现场画面" />
         ) : previewUrl ? (
           source === "video" ? (
@@ -51,8 +56,6 @@ export function ScanStage({
           ) : (
             <img className="stage-media" src={previewUrl} alt="待分析画面预览" />
           )
-        ) : cameraActive ? (
-          <video className="stage-media" ref={videoRef} muted playsInline />
         ) : (
           <div className="scan-placeholder" aria-live="polite">
             <div className="scan-radar" aria-hidden="true">

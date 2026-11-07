@@ -13,6 +13,7 @@ import type {
 } from "./api/types";
 import { BrandMark } from "./components/BrandMark";
 import { CameraPanel } from "./components/CameraPanel";
+import { EmployeeDialog } from "./components/EmployeeDialog";
 import { EmployeeLedger } from "./components/EmployeeLedger";
 import { JobLedger } from "./components/JobLedger";
 import { ModelLedger } from "./components/ModelLedger";
@@ -48,7 +49,6 @@ export default function App() {
     null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const selectedEmployee =
     bootstrap?.employees.find((employee) => employee.id === selectedEmployeeId) ?? null;
@@ -138,6 +138,12 @@ export default function App() {
         text: error instanceof Error ? error.message : "员工添加失败",
       });
     }
+  }
+
+  function closeEmployeeDialog() {
+    setShowEmployeeForm(false);
+    setEmployeeNo("");
+    setEmployeeName("");
   }
 
   async function collectFile() {
@@ -301,6 +307,23 @@ export default function App() {
   const canTrain =
     bootstrap.employees.length >= 2 &&
     bootstrap.employees.filter((employee) => employee.sampleCount >= 2).length >= 2;
+  const cameraMode =
+    workflow === "collect" ? "collect" : businessMode ? "business" : "analysis";
+  const cameraDisabled =
+    workflow === "collect"
+      ? !selectedEmployeeId
+      : !bootstrap.helmetModelReady;
+  const cameraPanel =
+    source === "camera" && workflow !== "train" ? (
+      <CameraPanel
+        mode={cameraMode}
+        employeeId={workflow === "collect" ? selectedEmployeeId : null}
+        disabled={cameraDisabled}
+        onMessage={handleCameraMessage}
+        onStopped={cameraStopped}
+        onActiveChange={setCameraActive}
+      />
+    ) : undefined;
 
   return (
     <main className="app-shell">
@@ -355,47 +378,10 @@ export default function App() {
           <span>
             <strong>检测模型尚未安装</strong>
             <small>
-              运行 <code>uv run python main.py download-models</code> 后刷新页面。
+              启动时会自动尝试下载模型；如仍失败，请检查终端网络与模型 Release。
             </small>
           </span>
         </aside>
-      )}
-
-      {showEmployeeForm && (
-        <section className="employee-form panel" aria-label="添加员工">
-          <div className="panel__head">
-            <div>
-              <span className="eyebrow">NEW PROFILE</span>
-              <h2>建立员工档案</h2>
-            </div>
-            <button type="button" className="ghost-button" onClick={() => setShowEmployeeForm(false)}>
-              关闭
-            </button>
-          </div>
-          <div className="employee-form__fields">
-            <label>
-              <span>员工编号</span>
-              <input
-                value={employeeNo}
-                onChange={(event) => setEmployeeNo(event.target.value)}
-                placeholder="例如 A-1001"
-                autoComplete="off"
-              />
-            </label>
-            <label>
-              <span>姓名</span>
-              <input
-                value={employeeName}
-                onChange={(event) => setEmployeeName(event.target.value)}
-                placeholder="例如 示例员工"
-                autoComplete="off"
-              />
-            </label>
-            <button type="button" className="primary-action" onClick={createEmployee}>
-              确认添加
-            </button>
-          </div>
-        </section>
       )}
 
       <section className="workbench" id="workflow">
@@ -405,8 +391,8 @@ export default function App() {
           busy={busy}
           cameraActive={cameraActive}
           latestMessage={latestMessage}
-          videoRef={videoRef}
           resultUrl={resultUrl}
+          cameraPanel={cameraPanel}
         />
 
         <aside className="run-console panel">
@@ -449,15 +435,15 @@ export default function App() {
                 ))}
               </select>
               {source === "camera" ? (
-                <CameraPanel
-                  mode="collect"
-                  employeeId={selectedEmployeeId}
-                  disabled={!selectedEmployeeId}
-                  onMessage={handleCameraMessage}
-                  onStopped={cameraStopped}
-                  videoRef={videoRef}
-                  onActiveChange={setCameraActive}
-                />
+                <div className="stage-action-hint">
+                  <span className="eyebrow">CAMERA READY</span>
+                  <strong>
+                    {selectedEmployee
+                      ? `准备采集 ${selectedEmployee.name} 的人脸`
+                      : "先选择采集对象"}
+                  </strong>
+                  <p>在左侧“现场画面”中开启和停止摄像头。</p>
+                </div>
               ) : (
                 <>
                   <input
@@ -537,15 +523,13 @@ export default function App() {
                       <small>业务模式会写入签到与违规记录</small>
                     </span>
                   </label>
-                  <CameraPanel
-                    mode={businessMode ? "business" : "analysis"}
-                    employeeId={null}
-                    disabled={!bootstrap.helmetModelReady}
-                    onMessage={handleCameraMessage}
-                    onStopped={cameraStopped}
-                    videoRef={videoRef}
-                    onActiveChange={setCameraActive}
-                  />
+                  <div className="stage-action-hint">
+                    <span className="eyebrow">CAMERA CONTROL</span>
+                    <strong>
+                      {businessMode ? "业务记录模式已启用" : "实时分析模式"}
+                    </strong>
+                    <p>摄像头启动与停止按钮位于左侧“现场画面”底部。</p>
+                  </div>
                 </>
               ) : (
                 <>
@@ -608,6 +592,16 @@ export default function App() {
         <p>Helmet Workbench · 本地优先的安全帽识别工作台</p>
         <span>MIT · LOCAL ONLY</span>
       </footer>
+
+      <EmployeeDialog
+        open={showEmployeeForm}
+        employeeNo={employeeNo}
+        name={employeeName}
+        onEmployeeNoChange={setEmployeeNo}
+        onNameChange={setEmployeeName}
+        onSubmit={createEmployee}
+        onClose={closeEmployeeDialog}
+      />
 
       {toast && (
         <div className={`toast toast--${toast.tone}`} role="status">

@@ -32,13 +32,12 @@ uv sync --extra dev
 pnpm --dir frontend install
 pnpm --dir frontend build
 
-uv run python main.py init
 uv run python main.py
 ```
 
 Open <http://127.0.0.1:8000>.
 
-The helmet detector is distributed as a versioned GitHub Release artifact and verified by SHA-256 before use.
+The default command initializes runtime directories, the database and the model before starting the workbench. The helmet detector is distributed as a versioned GitHub Release artifact and verified by SHA-256 before use.
 
 ## Workflow Rules
 
@@ -51,7 +50,6 @@ The helmet detector is distributed as a versioned GitHub Release artifact and ve
 ## Commands
 
 ```bash
-uv run python main.py init
 uv run python main.py serve
 uv run python main.py download-models
 uv run python main.py train --epochs 8

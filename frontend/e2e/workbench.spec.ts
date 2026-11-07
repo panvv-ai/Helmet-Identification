@@ -88,9 +88,11 @@ test("workflow and employee creation render on desktop", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /看清每一位现场人员/ })).toBeVisible();
   await page.getByRole("button", { name: /添加员工/ }).click();
-  await page.getByLabel("员工编号").fill("DEMO-03");
-  await page.getByLabel("姓名").fill("演示员工丙");
-  await page.getByRole("button", { name: "确认添加" }).click();
+  const dialog = page.getByRole("dialog", { name: "添加员工" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByLabel("员工编号").fill("DEMO-03");
+  await dialog.getByLabel("姓名").fill("演示员工丙");
+  await dialog.getByRole("button", { name: "确认添加" }).click();
   await expect(page.getByText("员工已添加，可以开始采集人脸样本")).toBeVisible();
   await page.getByRole("tab", { name: /训练/ }).click();
   await expect(page.getByText("样本已满足训练条件")).toBeVisible();

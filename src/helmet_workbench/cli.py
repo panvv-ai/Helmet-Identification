@@ -26,6 +26,17 @@ def _services() -> AppServices:
     return AppServices(settings)
 
 
+def prepareRuntime(settings: Settings) -> Path | None:
+    """Prepare local directories and fetch the detector when available."""
+    settings.ensure_directories()
+    try:
+        model_path: Path | None = ensureHelmetModel(settings.helmet_model_path)
+    except Exception as exc:
+        model_path = None
+        typer.echo(f"模型自动准备失败，工作台仍将启动：{exc}", err=True)
+    return model_path
+
+
 @app.callback()
 def default(
     context: typer.Context,
@@ -40,11 +51,10 @@ def default(
 def init() -> None:
     """创建运行目录、数据库并下载默认安全帽模型。"""
     settings = Settings()
-    settings.ensure_directories()
+    path = prepareRuntime(settings)
     services = AppServices(settings)
     services.close()
-    path = ensureHelmetModel(settings.helmet_model_path)
-    typer.echo(f"初始化完成：{path}")
+    typer.echo(f"初始化完成：{path or '模型未就绪'}")
 
 
 @app.command()
@@ -61,8 +71,9 @@ def serve(
     host: str = typer.Option("127.0.0.1", help="监听地址"),
     port: int = typer.Option(8000, help="监听端口"),
 ) -> None:
-    """启动本地 Web 工作台。"""
+    """自动初始化本地运行环境并启动 Web 工作台。"""
     settings = Settings(host=host, port=port)
+    prepareRuntime(settings)
     uvicorn.run(createApp(settings), host=host, port=port)
 
 

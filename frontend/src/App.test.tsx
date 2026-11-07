@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -6,6 +6,23 @@ import App from "./App";
 import { bootstrapFixture } from "./test/fixtures";
 
 const fetchMock = vi.fn();
+
+class FakeWebSocket {
+  static OPEN = 1;
+  readyState = FakeWebSocket.OPEN;
+  listeners = new Map<string, () => void>();
+
+  addEventListener(event: string, listener: () => void) {
+    this.listeners.set(event, listener);
+    if (event === "open") queueMicrotask(listener);
+  }
+
+  close() {
+    this.readyState = 3;
+  }
+
+  send() {}
+}
 
 function jsonResponse(payload: unknown, status = 200) {
   return Promise.resolve(
@@ -75,9 +92,10 @@ describe("Helmet Workbench", () => {
     await screen.findByText("现场工作台");
 
     await user.click(screen.getByRole("button", { name: /添加员工/ }));
-    await user.type(screen.getByLabelText("员工编号"), "A-1003");
-    await user.type(screen.getByLabelText("姓名"), "王五");
-    await user.click(screen.getByRole("button", { name: "确认添加" }));
+    const dialog = await screen.findByRole("dialog", { name: "添加员工" });
+    await user.type(within(dialog).getByLabelText("员工编号"), "A-1003");
+    await user.type(within(dialog).getByLabelText("姓名"), "王五");
+    await user.click(within(dialog).getByRole("button", { name: "确认添加" }));
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -85,5 +103,45 @@ describe("Helmet Workbench", () => {
         expect.objectContaining({ method: "POST" }),
       );
     });
+    await waitFor(() => expect(document.body.style.overflow).toBe(""));
+  });
+
+  it("keeps a stop control available after camera startup", async () => {
+    fetchMock.mockImplementation((input: string) => {
+      if (input === "/api/bootstrap") {
+        return jsonResponse({ ...bootstrapFixture, helmetModelReady: true });
+      }
+      if (input === "/api/jobs") return jsonResponse([]);
+      if (input === "/api/records/attendance") return jsonResponse([]);
+      if (input === "/api/records/violations") return jsonResponse([]);
+      if (input === "/api/employees/employee-1/samples") return jsonResponse([]);
+      if (input === "/api/employees/employee-2/samples") return jsonResponse([]);
+      return jsonResponse({});
+    });
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: {
+        getUserMedia: vi.fn().mockResolvedValue({
+          getTracks: () => [{ stop: vi.fn() }],
+        }),
+      },
+    });
+    vi.stubGlobal("WebSocket", FakeWebSocket);
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+      drawImage: vi.fn(),
+    } as unknown as CanvasRenderingContext2D);
+    vi.spyOn(HTMLCanvasElement.prototype, "toBlob").mockImplementation((callback) => {
+      callback(new Blob(["frame"], { type: "image/jpeg" }));
+    });
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { name: "现场工作台" });
+
+    await user.click(screen.getByRole("button", { name: /开启摄像头/ }));
+
+    expect(
+      await screen.findByRole("button", { name: /停止并保存结果/ }),
+    ).toBeInTheDocument();
   });
 });
