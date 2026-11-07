@@ -8,7 +8,7 @@ Helmet Workbench turns a collection of legacy YOLO detection, face classificatio
 
 ![Helmet Workbench product interface](images/helmet-workbench.png)
 
-> The screenshot is from a real running session. Field footage, employee names and face samples were redacted.
+> The screenshot is from a real running session with an empty dataset and contains no employee, face-sample or field-footage data.
 
 ## Features
 

@@ -8,7 +8,7 @@ Helmet Workbench 将原先分散的 YOLO 检测、人脸分类、PyQt 页面、S
 
 ![Helmet Workbench 产品界面](docs/images/helmet-workbench.png)
 
-> 截图来自真实运行页面。现场画面、员工姓名和样本人脸已脱敏。
+> 截图来自真实运行页面，使用空数据集，不包含员工、人脸样本或现场影像。
 
 ## 产品特点
 
