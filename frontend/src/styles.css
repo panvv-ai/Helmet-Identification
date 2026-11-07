@@ -1150,10 +1150,16 @@ select:focus-visible {
   display: grid;
   grid-template-columns: 1.55fr 0.75fr;
   gap: 20px;
+  min-width: 0;
   margin-top: 20px;
 }
 
+.ledger-grid > * {
+  min-width: 0;
+}
+
 .ledger {
+  min-width: 0;
   min-height: 330px;
 }
 
@@ -1219,6 +1225,7 @@ select:focus-visible {
 }
 
 .sample-manager {
+  min-width: 0;
   margin: 17px 16px 18px;
   border-top: 1px solid var(--line);
   padding-top: 16px;
@@ -1255,6 +1262,9 @@ select:focus-visible {
 
 .sample-grid {
   display: flex;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   gap: 9px;
   overflow-x: auto;
   padding-bottom: 4px;

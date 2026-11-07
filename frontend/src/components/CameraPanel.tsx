@@ -148,10 +148,8 @@ export function CameraPanel({
             <span className="scan-radar__sweep" />
             <span className="scan-radar__helmet">◠</span>
           </div>
-          <strong>
-            {mode === "collect" ? "对准员工，开始采集人脸" : "开启摄像头，开始现场检测"}
-          </strong>
-          <p>{modeLabels[mode]} · 画面只在本机处理</p>
+          <strong>请开启摄像头</strong>
+          <p>{modeLabels[mode]} · 点击下方按钮开始，画面只在本机处理</p>
         </div>
       )}
       <div className="camera-unit__control">

@@ -14,7 +14,9 @@ Helmet Workbench turns a collection of legacy YOLO detection, face classificatio
 
 - Complete workflow: employee profile → sample collection → model training → model activation → field detection → attendance and violation records.
 - Three source types: photo, video and browser camera.
+- A clear live-view stage that shows “Please turn on the camera” before camera startup and keeps start, live status, stop and save controls together.
 - Joint helmet and identity recognition: YOLO detects helmet status while Haar + CNN identifies employees.
+- Employee creation in a focused modal opened from the top-right action.
 - Manageable employee data: delete individual samples, continue collecting, deactivate employees and retain audit history.
 - Local-first privacy: listens on `127.0.0.1` by default and never uploads media, models or results to external services.
 - Persistent jobs and model history with progress, structured errors, stable label order and activation controls.
@@ -46,6 +48,14 @@ The default command initializes runtime directories, the database and the model 
 - Photo and video analyses are non-recording by default.
 - Camera business mode is the only mode that writes formal attendance and violation records.
 - Attendance requires a recognized, helmet-wearing employee; violations are recorded once per employee per day.
+
+## Workspace Guide
+
+- Use the top-right “添加员工” action to open the employee modal.
+- The left “现场画面” stage displays the live camera feed, photo previews and annotated video results.
+- Before camera startup, the stage displays an explicit camera prompt. Once active, the same control bar changes to “停止并保存结果”.
+- In collection mode, select an employee on the right, start the camera in the live-view stage, and stop to save and refresh samples.
+- In detection mode, use the right-side business toggle to enable formal attendance and violation records.
 
 ## Commands
 
@@ -87,7 +97,7 @@ See [Architecture](architecture.md) and the [Model Card](model-card.md) for desi
 
 ## Privacy and Limitations
 
-This release is a single-user local application. It does not provide authentication, remote multi-tenancy, liveness detection or production-grade identity verification. Obtain consent before collecting biometric face data and follow applicable privacy law.
+This release is a single-user local application. It does not provide authentication, remote multi-tenancy, liveness detection or production-grade identity verification. Camera use requires explicit browser permission. Stopping a camera session closes the media stream, saves the session and refreshes local data. Obtain consent before collecting biometric face data and follow applicable privacy law.
 
 See [Privacy](privacy.md) for details.
 

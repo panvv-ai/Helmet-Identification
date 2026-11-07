@@ -26,6 +26,24 @@ describe("CameraPanel", () => {
     vi.restoreAllMocks();
   });
 
+  it.each(["collect", "analysis"] as const)(
+    "shows an explicit camera prompt in %s mode",
+    (mode) => {
+      render(
+        <CameraPanel
+          mode={mode}
+          employeeId="employee-1"
+          disabled={false}
+          onMessage={() => undefined}
+          onStopped={vi.fn().mockResolvedValue(undefined)}
+          onActiveChange={() => undefined}
+        />,
+      );
+
+      expect(screen.getByText("请开启摄像头")).toBeInTheDocument();
+    },
+  );
+
   it("finishes the session and reports automatic save when stopped", async () => {
     const stopTrack = vi.fn();
     Object.defineProperty(navigator, "mediaDevices", {

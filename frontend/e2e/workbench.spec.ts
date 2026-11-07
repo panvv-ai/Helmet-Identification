@@ -48,6 +48,13 @@ const bootstrap = {
   violationsToday: 0,
 };
 
+const longSampleList = Array.from({ length: 24 }, (_, index) => ({
+  id: `sample-${index + 1}`,
+  imageUrl:
+    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
+  createdAt: "2026-11-07T08:05:00Z",
+}));
+
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/bootstrap", (route) =>
     route.fulfill({ json: bootstrap }),
@@ -60,7 +67,7 @@ test.beforeEach(async ({ page }) => {
     route.fulfill({ json: [] }),
   );
   await page.route("**/api/employees/employee-1/samples", (route) =>
-    route.fulfill({ json: [] }),
+    route.fulfill({ json: longSampleList }),
   );
   await page.route("**/api/employees/employee-3/samples", (route) =>
     route.fulfill({ json: [] }),
